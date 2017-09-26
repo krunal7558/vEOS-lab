@@ -130,7 +130,7 @@ Vagrant.configure(2) do |config|
     leaf03.vm.network 'private_network',
                        virtualbox__intnet: 'l03l04',
                        ip: '169.254.1.11', auto_config: false
-    leaf03.vm.network 'forwarded_port', guest: 443, host: 9443
+    leaf03.vm.network 'forwarded_port', guest: 443, host: 9445
     leaf03.vm.provision 'shell', inline: <<-SHELL
       sleep 30
       FastCli -p 15 -c "configure
@@ -155,7 +155,7 @@ Vagrant.configure(2) do |config|
     leaf04.vm.network 'private_network',
                        virtualbox__intnet: 'l03l04',
                        ip: '169.254.1.11', auto_config: false
-    leaf04.vm.network 'forwarded_port', guest: 443, host: 9444
+    leaf04.vm.network 'forwarded_port', guest: 443, host: 9446
     leaf04.vm.provision 'shell', inline: <<-SHELL
       sleep 30
       FastCli -p 15 -c "configure
