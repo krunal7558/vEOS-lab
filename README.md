@@ -40,3 +40,24 @@ the comments in the Vagrantfile as well as documentation on
 `vagrantup.com` for more information on using Vagrant.
 
 /vEOS-lab $ vagrant up
+
+/vEOS-lab $ vagrant status
+
+Current machine states:
+
+spine01                   running (virtualbox)
+
+spine02                   running (virtualbox)
+
+leaf01                    running (virtualbox)
+
+leaf02                    running (virtualbox)
+
+leaf03                    running (virtualbox)
+
+leaf04                    running (virtualbox)
+
+This environment represents multiple VMs. The VMs are all listed
+above with their current state. For more information about a specific
+VM, run `vagrant status NAME`.
+
