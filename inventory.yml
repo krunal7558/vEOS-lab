@@ -1,0 +1,28 @@
+all:
+   hosts:
+      spine01:
+         ansible_host: 127.0.0.1
+         ansible_port: 2222
+      spine02:
+         ansible_host: 127.0.0.1
+         ansible_port: 2200
+      leaf01:
+         ansible_host: 127.0.0.1
+         ansible_port: 2201
+      leaf02:
+         ansible_host: 127.0.0.1
+         ansible_port: 2202
+      leaf03:
+         ansible_host: 127.0.0.1
+         ansible_port: 2203
+      leaf04:
+         ansible_host: 127.0.0.1
+         ansible_port: 2200
+   spines:
+      spine01:
+      spine02:
+   leaves:
+      leaf01:
+      leaf02:
+      leaf03:
+      leaf04:
