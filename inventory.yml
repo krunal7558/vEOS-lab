@@ -1,23 +1,21 @@
 all:
    hosts:
       spine01:
-         ansible_host: 127.0.0.1
-         ansible_port: 2222
+         ansible_port: 8443
       spine02:
-         ansible_host: 127.0.0.1
-         ansible_port: 2200
+         ansible_port: 8444
       leaf01:
-         ansible_host: 127.0.0.1
-         ansible_port: 2201
+         ansible_port: 9443
       leaf02:
-         ansible_host: 127.0.0.1
-         ansible_port: 2202
+         ansible_port: 9444
       leaf03:
-         ansible_host: 127.0.0.1
-         ansible_port: 2203
+         ansible_port: 9445
       leaf04:
-         ansible_host: 127.0.0.1
-         ansible_port: 2200
+         ansible_port: 9446
+   vars:
+       ansible_host: 127.0.0.1
+       ansible_username: eapiuser
+       ansible_ssh_pass: icanttellyou
    spines:
       spine01:
       spine02:
