@@ -1,0 +1,12 @@
+---
+- name: sample playbook
+  gather_facts: yes
+  hosts: all
+
+  tasks:
+  - name: collect facts
+    eos_facts: 
+      gather_subset: all
+    # feel free to add any comments here
+
+

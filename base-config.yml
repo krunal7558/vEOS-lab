@@ -1,0 +1,52 @@
+---
+# This is Playbook header. A playbook can have multiple plays
+- name: Configure basic system parameters of Arista switches
+  gather_facts: yes
+  hosts: all
+
+# Following secion describe tasks in form of Ansible modules. 
+# A task has one or more ansible modules.
+
+  tasks:
+  - name: Configure username local
+    eos_user:
+      name: local
+      privilege: 15
+      configured_password: blahblah
+      state: present
+  - name: Configure hostname, DNS server and domain name
+    eos_system:
+      #hostname: {{hosts}}
+      domain_name: fabric.example.com
+      lookup_source: Management1
+      name_servers: [8.8.8.8, 8.8.4.4]
+      provider:
+        transport: cli
+  - name: Setup login banner
+    eos_banner: 
+      banner: login
+      text:  | 
+             This is secure system. All login attempts are being logged.
+  - name: Setup MOTD banner
+    eos_banner: 
+      banner: motd
+      text: |
+            Welcome.
+  - name: Setup syslog servers
+    eos_logging: 
+      dest: host
+      name: [10.0.2.2, 10.0.2.3]
+      state: present
+  - name: Configure local syslog buffer size
+    eos_logging:
+      dest: buffered
+      size: 4096
+  - name: Configure severity level
+    eos_logging:
+      dest: on
+      level: informational
+      state: present
+  - name: Configure IPv6 unicast routing
+    eos_config: 
+      lines: ipv6 unicast-routing
+      
