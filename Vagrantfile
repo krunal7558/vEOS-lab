@@ -48,16 +48,6 @@ Vagrant.configure(2) do |config|
       sleep 30
       FastCli -p 15 -c "configure
       hostname spine01
-      interface eth 1-5
-        no switchport
-        ipv6 enable
-        mtu 9000
-        ipv6 nd ra suppress all
-        no shut
-        exit
-      interface lo0
-        ipv6 enable
-      username eapiuser privilege 15 role network-admin secret icanttellyou
       management api http-commands
       no shutdown
       interface Management1
@@ -108,18 +98,8 @@ Vagrant.configure(2) do |config|
       sleep 30
       FastCli -p 15 -c "configure
       hostname spine02
-      interface eth 1-5
-        no switchport
-        ipv6 enable
-        mtu 9000
-        ipv6 nd ra suppress all
-        no shut
-        exit
-      interface lo0
-        ipv6 enable
       interface Management1
         ip address 192.168.56.102/24 secondary
-      username eapiuser privilege 15 role network-admin secret icanttellyou
       management api http-commands
       no shutdown
       end
@@ -156,18 +136,8 @@ Vagrant.configure(2) do |config|
       sleep 30
       FastCli -p 15 -c "configure
       hostname leaf01
-      interface eth 1-3
-        no switchport
-        ipv6 enable
-        mtu 9000
-        ipv6 nd ra suppress all
-        no shut
-        exit
-      interface lo0
-        ipv6 enable
       interface Management1
         ip address 192.168.56.103/24 secondary
-      username eapiuser privilege 15 role network-admin secret icanttellyou
       management api http-commands
       no shutdown
       end
@@ -204,19 +174,8 @@ Vagrant.configure(2) do |config|
       sleep 30
       FastCli -p 15 -c "configure
       hostname leaf02
-      ipv6 unicast-routing
-      interface eth 1-3
-        no switchport
-        ipv6 enable
-        mtu 9000
-        ipv6 nd ra suppress all
-        no shut
-        exit
-      interface lo 0
-        ipv6 enable
       interface Management1
         ip address 192.168.56.104/24 secondary
-      username eapiuser privilege 15 role network-admin secret icanttellyou
       management api http-commands
       no shutdown
       end
@@ -253,19 +212,8 @@ Vagrant.configure(2) do |config|
       sleep 30
       FastCli -p 15 -c "configure
       hostname leaf03
-      ipv6 unicast-routing
-      interface eth 1-3
-        no switchport
-        ipv6 enable
-        mtu 9000
-        ipv6 nd ra suppress all
-        no shut
-        exit
-      interface lo 0
-        ipv6 enable
       interface Management1
         ip address 192.168.56.105/24 secondary
-      username eapiuser privilege 15 role network-admin secret icanttellyou
       management api http-commands
       no shutdown
       end
@@ -302,19 +250,8 @@ Vagrant.configure(2) do |config|
       sleep 30
       FastCli -p 15 -c "configure
       hostname leaf04
-      ipv6 unicast-routing
-      interface eth 1-3
-        no switchport
-        ipv6 enable
-        mtu 9000
-        ipv6 nd ra suppress all
-        no shut
-        exit
-      interface lo 0
-        ipv6 enable
       interface Management1
         ip address 192.168.56.106/24 secondary
-      username eapiuser privilege 15 role network-admin secret icanttellyou
       management api http-commands
       no shutdown
       end

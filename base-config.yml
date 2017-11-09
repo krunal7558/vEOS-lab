@@ -1,12 +1,13 @@
 ---
 # This is Playbook header. A playbook can have multiple plays
 - name: Configure basic system parameters of Arista switches
-  gather_facts: yes
+  gather_facts: no
   hosts: all
+  vars:
 
 # Following secion describe tasks in form of Ansible modules. 
 # A task has one or more ansible modules.
-
+ 
   tasks:
   - name: Configure username local
     eos_user:
@@ -14,39 +15,105 @@
       privilege: 15
       configured_password: blahblah
       state: present
+
+  - name: Configure username for eAPI interface
+    eos_user:
+      name: eapiuser
+      privilege: 15
+      configured_password: icanttellyou
+      state: present
+
   - name: Configure hostname, DNS server and domain name
     eos_system:
-      #hostname: {{hosts}}
+      hostname: "{{ inventory_hostname }}"
       domain_name: fabric.example.com
       lookup_source: Management1
       name_servers: [8.8.8.8, 8.8.4.4]
       provider:
         transport: cli
+
   - name: Setup login banner
     eos_banner: 
       banner: login
       text:  | 
              This is secure system. All login attempts are being logged.
+
   - name: Setup MOTD banner
     eos_banner: 
       banner: motd
       text: |
-            Welcome.
+            Hello and Welcome.
+
   - name: Setup syslog servers
     eos_logging: 
       dest: host
       name: [10.0.2.2, 10.0.2.3]
       state: present
+
   - name: Configure local syslog buffer size
     eos_logging:
       dest: buffered
       size: 4096
+
   - name: Configure severity level
     eos_logging:
       dest: on
       level: informational
       state: present
+
   - name: Configure IPv6 unicast routing
     eos_config: 
       lines: ipv6 unicast-routing
       
+  - name: Enable routing
+    eos_config:
+      lines:
+        - ip routing
+        - ip multicast-routing
+        - ipv6 unicast-routing  
+
+  - name: Configure loopbacks
+    eos_config:
+      lines:
+        - interface lo0
+        - description system loopback
+        - ipv6 enable
+        - ip pim sparse-more
+        - end
+
+# Second play for node specific configuration on spines
+- name: Configure interfaces for spine swiches
+  gather_facts: no
+  hosts: spines
+  vars:
+  tasks:
+  - name: Prepare interfaces on spines
+    eos_config:
+      lines:
+        - interface et1-5
+        - no switchport
+        - ipv6 enable
+        - mtu 9000
+        - ipv6 nd ra suppress all
+        - ip pim sparse-mode
+        - no shut
+        - exit
+
+# New play for specific configurations on Leaves
+- name: Configure interfaces for spine swiches
+  gather_facts: no
+  hosts: spines
+  vars:
+  tasks:
+  - name: Prepare interfaces on leaves
+    hosts: leaves
+    eos_config:
+      lines:
+        - interface et1-5
+        - no switchport
+        - ipv6 enable
+        - mtu 9000
+        - ipv6 nd ra suppress all
+        - ip pim sparse-mode
+        - no shut
+        - exit

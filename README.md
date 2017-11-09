@@ -61,3 +61,11 @@ This environment represents multiple VMs. The VMs are all listed
 above with their current state. For more information about a specific
 VM, run `vagrant status NAME`.
 
+
+
+Ignore SSH keys if needed:
+
+Add StrictHostKeyChecking=no to ~/.ssh/config or /etc/ssh/ssh_config to stop ssh client from complaining about ever-changing SSH keys on switches.
+
+
+/vEOS-lab $ echo StrictHostKeyChecking=no >> ~/.ssh/config
