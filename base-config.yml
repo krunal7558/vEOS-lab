@@ -1,9 +1,10 @@
 ---
 # This is Playbook header. A playbook can have multiple plays
 - name: Configure basic system parameters of Arista switches
-  gather_facts: no
+  connection: network_cli
   hosts: all
-  vars:
+  vars_files:
+    - "{{inventory_dir}}/vault/secret.yml"
 
 # Following secion describe tasks in form of Ansible modules. 
 # A task has one or more ansible modules.
