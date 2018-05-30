@@ -1,0 +1,23 @@
+---
+show_commands:
+  - show version
+  - show ip interface brief
+  - sh int | in Descr|rate|line|ernet
+  - show interface status
+  - show interfaces counters rates
+  - show mac address-table dynamic
+  - show ip igmp snooping groups
+  - show spanning-tree detail
+  - show ip arp
+  - show ip bgp summary
+  - show ip bgp
+  - show ip route bgp
+  - show ip route
+  - show ip route ospf
+  - show ip ospf neighbor
+  - show ip ospf interface
+  - show lldp neigh
+  - show ip mroute
+  - show ip pim neighbor
+  - show running-config
+

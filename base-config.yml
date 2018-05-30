@@ -75,12 +75,12 @@
   - name: Configure loopbacks
     eos_config:
       lines:
-        - interface lo0
         - description system loopback
         - ipv6 enable
-        - ip pim sparse-more
+        - ip pim sparse-mode
         - end
-
+      parents: interface loopback0
+       
 # Second play for node specific configuration on spines
 - name: Configure interfaces for spine swiches
   gather_facts: no
@@ -90,30 +90,26 @@
   - name: Prepare interfaces on spines
     eos_config:
       lines:
-        - interface et1-5
         - no switchport
         - ipv6 enable
         - mtu 9000
         - ipv6 nd ra suppress all
         - ip pim sparse-mode
         - no shut
-        - exit
-
+      parents: interface ethernet1
 # New play for specific configurations on Leaves
 - name: Configure interfaces for spine swiches
   gather_facts: no
-  hosts: spines
+  hosts: leaves
   vars:
   tasks:
   - name: Prepare interfaces on leaves
-    hosts: leaves
     eos_config:
       lines:
-        - interface et1-5
         - no switchport
         - ipv6 enable
         - mtu 9000
         - ipv6 nd ra suppress all
         - ip pim sparse-mode
         - no shut
-        - exit
+      parent: interface ethernet1

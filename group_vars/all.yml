@@ -1,0 +1,24 @@
+
+---
+# Ansible specific variables
+ansible_user: admin
+ansible_host: 127.0.0.1
+ansible_network_os: eos
+ansible_become: yes
+ansible_become_method: enable
+
+# Config specific variable.
+snmp_location: Virtual
+mgmt_src_intf: Ma1
+
+syslog_servers: [10.201.1.1, 192.168.64.70]
+ntp_servers: [203.0.113.123, 192.0.2.123]
+snmp_servers: [10.201.1.1, 192.168.64.70]
+snmp_contact: krunal@localhost
+domain_name: veos.localhost
+vty_acl:
+  name: VTY_ACL
+  lines:
+    - permit ip 192.168.0.0 0.0.255.255 any
+    - permit ip 169.254.1.0 0.0.0.255 any
+

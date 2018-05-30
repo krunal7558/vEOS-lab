@@ -1,0 +1,70 @@
+---
+# Sample playbook to capture bunch of show commands from network devices.
+# usage:  ansible-playbook -i inventory_filename -u username -k netsnapshot.yml --extra-vars "commands_file=commands_file.yml"
+# This creates following directory under./output/netsnapshot_* with individual files
+# Also assembles all files in single text file ./output/netsnapshots_*.txt
+# Tested with ansible 2.5
+
+- name: Playbook for capturing show commands in a text file
+  hosts: all
+# Following is required if playbook is ran with Ansible 2.5
+  connection: network_cli
+  become: yes
+  become_method: enable
+
+  vars_files:
+    - "{{inventory_dir}}/vault/secret.yml"
+
+  vars:
+    cli:
+      username: "{{ ansible_user }}"
+      password: "{{ ansible_ssh_pass }}"
+      authorize: yes
+      auth_pass: "{{ enable_pass }}"
+      host: "{{ ansible_host }}"
+      transport: cli
+  pre_tasks:
+    - fail:
+        msg: "usage:  ansible-playbook -i inventory_filename -u username -k netsnapshot.yml --extra-vars 'commands_file=filename.yml'"
+      when: not ( commands_file is defined)
+      any_errors_fatal: true
+      run_once: true
+
+    - include_vars: "{{ commands_file }}"
+      with_first_found:
+        - "{{inventory_dir}}/vars/{{ansible_network_os}}/{{ commands_file }}" # platform specific show_commands
+        - "{{inventory_dir}}/vars/{{ commands_file }}" # show_commands inside task dir
+        - "./{{ commands_file }}"                      # show_commands inside local dir
+
+    - local_action: command date +%Y%m%d%H%M%S
+      register: timestamp
+      run_once: true
+    # - debug: var=timestamp
+
+    - file:
+        path: "{{inventory_dir}}/outputs/netsnapshot_{{timestamp.stdout}}"
+        state: directory
+      delegate_to: localhost
+      run_once: true
+
+  tasks:
+    - lineinfile:
+        dest: "{{inventory_dir}}/outputs/netsnapshot_{{timestamp.stdout}}/{{inventory_hostname}}.txt"
+        line: "###############Begin {{ inventory_hostname }}########################"
+        create: yes
+        state: present
+      delegate_to: localhost
+    - include_tasks: "{{inventory_dir}}/tasks/{{ ansible_network_os }}/cli_snapshot.yml"
+    - lineinfile:
+        dest: "{{inventory_dir}}/outputs/netsnapshot_{{timestamp.stdout}}/{{inventory_hostname}}.txt"
+        line: "################End {{ inventory_hostname }}##################"
+        state: present
+      delegate_to: localhost
+
+  post_tasks:
+    - name: Assemble all files
+      assemble:
+        src: "{{inventory_dir}}/outputs/netsnapshot_{{timestamp.stdout}}"
+        dest: "{{inventory_dir}}/outputs/netsnapshots_{{timestamp.stdout}}.txt"
+      delegate_to: localhost
+

@@ -1,0 +1,11 @@
+---
+- name: Configure username
+  hosts: all
+  gather_facts: no
+  tasks:
+  - name: Configure test username
+    eos_config:
+      lines:
+        - username lore secret 5 $1$pdQG$.9.3Dmipu.33XB3hlrhrz0
+
+

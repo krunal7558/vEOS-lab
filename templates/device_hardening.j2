@@ -1,0 +1,125 @@
+{# name-server configuration template #}
+{% if name_servers is defined %}
+{% for ip in name_servers %}
+ip name-server vrf {{ mgmt_vrf|default('default') }} {{ ip }}
+{% endfor %}
+!
+{% endif %}
+!
+{# syslog configuration template #}
+logging console notifications
+logging trap notifications
+{% for ip in syslog_servers %}
+logging vrf {{ mgmt_vrf|default('default') }} host {{ ip }}
+{% endfor %}
+logging vrf {{ mgmt_vrf|default('default') }} source-interface {{ mgmt_src_intf }}
+!
+{# hostname and domain name configuration template #}
+hostname {{ inventory_hostname }}
+ip domain-name {{ domain_name }}
+!
+{# ntp configuration template #}
+ntp source vrf {{ mgmt_vrf|default('default') }} {{ mgmt_src_intf }}
+{% for ip in ntp_servers %}
+{# need to implement 'prefer' keyword in template #}
+ntp server vrf {{ mgmt_vrf|default('default') }} {{ ip }}
+{% endfor %}
+!
+{# SNMP configuration template #}
+snmp-server contact {{ snmp_contact }}
+snmp-server location {{ snmp_location | default('virtual') }}
+!
+{% if snmp_acl is defined %}
+ip acess-list {{ snmp_acl.name }}
+{%for line in snmp_acl.lines%}
+ {{line}}
+{% endfor %}
+{%endif%}
+!
+snmp-server vrf {{ mgmt_vrf|default('default') }} source-interface {{ mgmt_src_intf }}
+snmp-server community {{ snmp_community }} ro {% if snmp_acl is defined %} {{ snmp_acl }} {% endif %}
+
+!
+{% for ip in snmp_servers %}
+snmp-server host {{ ip }} vrf {{ mgmt_vrf|default('default') }} version 2c {{ snmp_community }}
+{% endfor %}
+!
+snmp-server enable traps bgp
+snmp-server enable traps ospf
+snmp-server enable traps ospfv3
+snmp-server enable traps pim
+snmp-server enable traps snmp link-down
+snmp-server enable traps snmp link-up
+!
+interface Loopback0
+   ip address {{ loopback.ip }} {{ loopback.mask|default('255.255.255.255') }}
+!
+
+{# AAA configuration template #}
+tacacs-server key 0 {{ tacacs_key }}
+{% for ip in tacacs_servers %}
+tacacs-server host {{ ip }} vrf {{ mgmt_vrf|default('default') }}
+{% endfor %}
+!
+aaa authentication login default group tacacs+ local
+aaa authentication enable default group tacacs+ local
+aaa authorization commands 0,15 default group tacacs+ local
+aaa authorization config-commands
+aaa accounting commands 15 default start-stop group tacacs+
+!
+ip ftp source-interface {{ mgmt_src_intf }}
+ip tftp source-interface {{ mgmt_src_intf }}
+ip ssh client source-interface {{ mgmt_src_intf }}
+!
+{# Banner configuration template #}
+banner login
+##############################################################
+     _.--"""""--._
+   .'             '.
+  /                 \
+ ;                   ;
+ |                   |
+ |                   |
+ ;                   ;
+  \ (`'--,    ,--'`) /
+   \ \  _ )  ( _  / /
+    ) )(')/  \(')( (
+   (_ `""` /\ `""` _)
+    \`"-, /  \ ,-"`/
+     `\ / `""` \ /`
+      |/\/\/\/\/\|
+      |\        /|
+      ; |/\/\/\| ;
+       \`-`--`-`/
+        \      /
+ jgs     ',__,'
+          q__p
+          q__p
+          q__p
+          q__p
+#############################################################
+EOF
+!
+{% if vty_acl is defined %}
+ip acess-list {{ vty_acl.name }}
+{%for line in vty_acl.lines%}
+ {{line}}
+{% endfor %}
+deny ip any any log
+{%endif%}
+!
+management api http-commands
+   no shutdown
+   !
+   vrf management
+      no shutdown
+!
+management console
+   idle-timeout 5
+!
+management ssh
+   idle-timeout 5
+{%if vty_acl is defined%}
+   ip access-group {{ vty_acl.name }} in
+{%endif%}
+

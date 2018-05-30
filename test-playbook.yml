@@ -1,12 +1,20 @@
 ---
-- name: sample playbook
-  gather_facts: yes
+- name: Sample playbook to collect facts
   hosts: all
-
+  connection: local
+  gather_facts: false
+  vars_files:
+    - ./vault/secret.yml
+  vars:
+    cli:
+      host: "{{ ansible_host }}"
+      username: "{{ ansible_user }}"
+      password: "{{ ansible_ssh_pass }}"
+      authorize: yes
+      auth_pass: "{{ become_pass }}"
   tasks:
-  - name: collect facts
-    eos_facts: 
-      gather_subset: all
-    # feel free to add any comments here
+    - include_tasks: "{{ inventory_dir }}/tasks/{{ ansible_network_os }}/gather_facts.yml"
 
+    - name: print data
+      debug: msg=" {{ inventory_hostname }}, {{ ansible_net_model }}, {{ ansible_net_version }}, {{ ansible_net_serialnum }} "
 

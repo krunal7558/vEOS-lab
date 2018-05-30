@@ -1,0 +1,10 @@
+---
+- name: Gather facts from Arista devices
+  eos_facts:
+    # with Ansible 2.5 Provider arg is only needed when used with connection eapi
+    # provider: "{{ cli }}"
+    gather_subset:
+     - hardware
+  register: facts
+  when: ansible_network_os is eq 'eos'
+
