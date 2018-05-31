@@ -1,5 +1,6 @@
 
 # Arista vEOS lab
+
 ================
 
 ## vEOS-lab/
@@ -10,7 +11,7 @@ Notable files and directories:
 
 * ansible.cfg: Ansible configuration file.
 
-* group_vars/*: GRoup specific variable files.
+* group_vars/*: Group specific variable files.
 
 * host_vars/*: Host specific variable files.
 
@@ -97,8 +98,7 @@ Check ''Vagrantfile'' and bring up environment. This will take ~10 mins. You may
 	Add StrictHostKeyChecking=no to ~/.ssh/config or /etc/ssh/ssh_config to stop ssh client from complaining about ever-changing SSH keys on switches.
 	/vEOS-lab $ echo StrictHostKeyChecking=no >> ~/.ssh/config
 
-
-### Step 4:
+### Step 5:
 
 Create vault file which holds all secret passwords e.g TACACS passwords and enable passwords
 
@@ -110,20 +110,35 @@ Create vault file which holds all secret passwords e.g TACACS passwords and enab
 
 Remember this password. Inside secret.yml
 
-Replace with your own tacacs username password
+Replace with your own username password
 
 	---
-	ansible_user: tacacsusername
-	ansible_ssh_pass: topsecret
-	enable_pass: everyoneknows
+	ansible_user: myusername # admin
+	ansible_ssh_pass: topsecret # or admin
+	enable_pass: everyoneknows # whocares
 	# Ansible 2.5
 	ansible_password: topsecret
 	ansible_become_pass: everyoneknows
 
 Save and exit this file can be edited only using "ansible-vault edit secret.yml" command
 
+### Step 6:
 
-You are now ready to run playbooks.
+Create vault password file vault_pass.txt and assign appropriate permission. 
+
+	/vEOS-lab $ vim .vault_pass.txt
+
+Vim editor will open, go to insert mode and type your vault password then save and exit ESC + !wq
+
+### Step 7: 
+
+Change file mode so only you can read it
+
+	/vEOS-lab $ chmod 400 .vault_pass.txt
+
+
+
+####You are now ready to run playbooks.
 
 ### Example 1:
 
@@ -136,7 +151,21 @@ Any platform specific show commands can be added by creating show_commands.yml f
 
 Run playbook using
 
-	$ ansible-playbook -l cisco netsnapshot.yml --extra-vars 'commands_file=show_commands.yml'
+	$ ansible-playbook netsnapshot.yml -e 'commands_file=show_commands.yml'
+
+Following files will be generated.
+
+	~/vEOS-lab/outputs$ tree
+	.
+	├── netsnapshot_20180530144531
+	│   ├── leaf01.txt
+	│   ├── leaf02.txt
+	│   ├── leaf03.txt
+	│   ├── leaf04.txt
+	│   ├── spine01.txt
+	│   └── spine02.txt
+	└── netsnapshots_20180530144531.txt
+
 
 ### Example 2:
 
@@ -152,3 +181,4 @@ Gather SSH keys of network devices and populate them in ~/ssh/known_hosts file.
 	$ ansible-playbook get-sshkeys.yml
 
 
+##### More to come. 

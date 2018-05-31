@@ -1,6 +1,8 @@
 ---
 # Sample playbook to capture bunch of show commands from network devices.
 # usage:  ansible-playbook -i inventory_filename -u username -k netsnapshot.yml --extra-vars "commands_file=commands_file.yml"
+# OR with vault setup
+# ansible-playbook netsnapshot.yml -e "commands_file=commands_file.yml"
 # This creates following directory under./output/netsnapshot_* with individual files
 # Also assembles all files in single text file ./output/netsnapshots_*.txt
 # Tested with ansible 2.5
@@ -23,6 +25,7 @@
       auth_pass: "{{ enable_pass }}"
       host: "{{ ansible_host }}"
       transport: cli
+
   pre_tasks:
     - fail:
         msg: "usage:  ansible-playbook -i inventory_filename -u username -k netsnapshot.yml --extra-vars 'commands_file=filename.yml'"
@@ -54,7 +57,9 @@
         create: yes
         state: present
       delegate_to: localhost
+
     - include_tasks: "{{inventory_dir}}/tasks/{{ ansible_network_os }}/cli_snapshot.yml"
+
     - lineinfile:
         dest: "{{inventory_dir}}/outputs/netsnapshot_{{timestamp.stdout}}/{{inventory_hostname}}.txt"
         line: "################End {{ inventory_hostname }}##################"
