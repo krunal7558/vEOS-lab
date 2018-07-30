@@ -1,0 +1,35 @@
+---
+- name: Playbook to create interface desciption based on LLDP data
+  hosts: all
+  connection: network_cli
+  vars_files:
+    - "{{ inventory_dir }}/vault/secret.yml"
+
+  tasks:
+    - name: Gather lldp data
+      eos_command:
+        commands:
+          - command: show lldp neighbor | json
+            # output: json
+      register: lldp_data
+
+    - debug:
+        msg: |
+             "interface {{ item.port }}
+               description To {{ item.neighborDevice }} {{ item.neighborPort }}"
+      with_items: "{{ lldp_data.stdout[0].lldpNeighbors }}"
+
+    - name: Configure ports based on lldp data
+      eos_config:
+        lines:
+          - no switchport
+          - description To {{ item.neighborDevice }} {{ item.neighborPort }}
+          - mtu 9000
+          - ipv6 enable
+          - ip pim sparse-mode
+          - ipv6 address fe80::/64 link-local
+          - ipv6 nd ra suppress all
+          - no shut
+        parents: interface {{ item.port }}
+      with_items: "{{ lldp_data.stdout[0].lldpNeighbors }}"
+

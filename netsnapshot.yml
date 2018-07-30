@@ -9,7 +9,7 @@
 
 - name: Playbook for capturing show commands in a text file
   hosts: all
-# Following is required if playbook is ran with Ansible 2.5
+# Following is required if playbook is ran with Ansible >2.5
   connection: network_cli
   become: yes
   become_method: enable
@@ -29,7 +29,7 @@
   pre_tasks:
     - fail:
         msg: "usage:  ansible-playbook -i inventory_filename -u username -k netsnapshot.yml --extra-vars 'commands_file=filename.yml'"
-      when: not ( commands_file is defined)
+      when: not (commands_file is defined)
       any_errors_fatal: true
       run_once: true
 
